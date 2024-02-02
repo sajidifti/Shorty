@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="This is the signup page">
+        <meta name="keywords" content="url-shortener, shorty, sajidifti">
+        <title>Sign Up for Shorty</title>
+    </head>
+    <body>
+        <div class="signup">
+            <form method="post">
+                {% csrf_token %}
+                <legend>Sign Up for Shorty</legend>
+                {{ form }}
+                <div class="btn">
+                    <button type="submit">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
