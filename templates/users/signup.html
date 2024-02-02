@@ -8,11 +8,19 @@
         <title>Sign Up for Shorty</title>
     </head>
     <body>
+        {% if messages %}
+            {% for message in messages %}{{ message|safe|escape }}{% endfor %}
+        {% endif %}
         <div class="signup">
             <form method="post">
                 {% csrf_token %}
                 <legend>Sign Up for Shorty</legend>
-                {{ form }}
+                {% for item in form %}
+                    <label class="label" for="{{ item.auto_id }}">{{ item.label }}</label>
+                    {{ item }}
+                    {{ item.errors }}
+                    <br>
+                {% endfor %}
                 <div class="btn">
                     <button type="submit">Sign Up</button>
                 </div>
