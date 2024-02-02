@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from .forms import UserSignUpForm, UserLoginForm
-from .decorators import unauthenticated_users_only
+from .decorators import unauthenticated_users_only, authenticated_users_only
 
 
 # Create your views here.
@@ -33,7 +33,7 @@ def customSignup(request):
     return render(request, "users/signup.html", context)
 
 
-@login_required
+@authenticated_users_only
 def customLogout(request):
     logout(request)
     messages.info(request, "Logged out successfully!")
@@ -42,6 +42,8 @@ def customLogout(request):
 
 @unauthenticated_users_only
 def customLogin(request):
+    next_url = request.GET.get('next')
+
     if request.method == "POST":
         form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
@@ -52,10 +54,13 @@ def customLogin(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"Logged in as {user.username}")
-                return redirect("home")
+
+                if next_url:
+                    return redirect(next_url)  # Redirect to the 'next' URL
+                else:
+                    return redirect("home")  # Default redirect if 'next' is not set
         else:
             for error in list(form.errors.values()):
-                # print(error)
                 messages.error(request, error)
 
     form = UserLoginForm()

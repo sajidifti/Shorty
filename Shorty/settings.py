@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     "main",
 ]
 
-AUTH_USER_MODEL = "users.CustomUser"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -130,6 +129,9 @@ STATIC_URL = "static/"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+LOGIN_URL = "login"
+
+AUTH_USER_MODEL = "users.CustomUser"
 
 AUTHENTICATION_BACKENDS = ["users.backends.EmailBackend"]
 
