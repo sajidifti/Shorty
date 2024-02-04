@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Added by Me
     "users",
     "main",
+    "django_recaptcha",
 ]
 
 
@@ -127,13 +129,20 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# Customized
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 LOGIN_URL = "login"
 
+# Custom User Model
 AUTH_USER_MODEL = "users.CustomUser"
 
+# Email Login
 AUTHENTICATION_BACKENDS = ["users.backends.EmailBackend"]
+
+# ReCaptcha
+RECAPTCHA_PUBLIC_KEY = credentials.RECAPTCHA_PUBLIC_KEY_ORIGINAL
+RECAPTCHA_PRIVATE_KEY = credentials.RECAPTCHA_PRIVATE_KEY_ORIGINAL
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

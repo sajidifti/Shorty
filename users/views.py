@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 
@@ -42,7 +43,7 @@ def customLogout(request):
 
 @unauthenticated_users_only
 def customLogin(request):
-    next_url = request.GET.get('next')
+    next_url = request.GET.get("next")
 
     if request.method == "POST":
         form = UserLoginForm(request, data=request.POST)
@@ -56,13 +57,29 @@ def customLogin(request):
                 messages.info(request, f"Logged in as {user.username}")
 
                 if next_url:
-                    return redirect(next_url)  # Redirect to the 'next' URL
+                    return redirect(next_url)
                 else:
-                    return redirect("home")  # Default redirect if 'next' is not set
+                    return redirect("home")
         else:
-            for error in list(form.errors.values()):
-                messages.error(request, error)
+            for field, error_messages in form.errors.items():
+                for error_message in error_messages:
+                    if (
+                        field == "captcha"
+                        and error_message == "This field is required."
+                    ):
+                        custom_error_message = "You must pass the reCAPTCHA test. "
+                        messages.error(request, custom_error_message)
+                    else:
+                        messages.error(request, error_message)
 
-    form = UserLoginForm()
+            # Store form data in session only if there's a validation error
+            request.session["login_form_data"] = form.cleaned_data
+            return redirect(request.path)
+
+    else:
+        form = UserLoginForm()
+        # Repopulate the form with prevoius form data
+        form_data = request.session.pop("login_form_data", {})
+        form = UserLoginForm(request, initial=form_data)
 
     return render(request, "users/login.html", {"form": form})

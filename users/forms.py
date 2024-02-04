@@ -2,6 +2,8 @@ from typing import Any
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 
 class UserSignUpForm(UserCreationForm):
@@ -46,3 +48,5 @@ class UserLoginForm(AuthenticationForm):
             attrs={"class": "form-control", "placeholder": "Password"}
         )
     )
+
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox())

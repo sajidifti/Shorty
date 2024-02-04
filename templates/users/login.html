@@ -8,6 +8,10 @@
         <title>Login for Shorty</title>
     </head>
     <body>
+        {% if messages %}
+            {% for message in messages %}{{ message|safe|escape }}{% endfor %}
+        {% endif %}
+        <br>
         <div class="signup">
             <form method="post">
                 {% csrf_token %}
