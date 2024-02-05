@@ -7,6 +7,10 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 
 class UserSignUpForm(UserCreationForm):
+    """
+    Custom User Sign Up Form
+    """
+
     email = forms.EmailField(
         help_text="Required. Add a valid email address.", required=True
     )
@@ -33,6 +37,10 @@ class UserSignUpForm(UserCreationForm):
 
 
 class UserLoginForm(AuthenticationForm):
+    """
+    Custom User Login Form
+    """
+
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
 
@@ -53,8 +61,12 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserUpdateForm(forms.ModelForm):
+    """
+    Custom User Update Form
+    """
+
     email = forms.EmailField(required=True)
 
     class Meta:
         model = get_user_model()
-        fields = ["username", "email", "first_name", "last_name"]
+        fields = ["username", "email", "first_name", "last_name", "image"]

@@ -1,3 +1,4 @@
 *.pyc
 credentials.py
 db.sqlite3
+media/profiles/*

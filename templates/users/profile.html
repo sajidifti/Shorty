@@ -13,7 +13,7 @@
         {% endif %}
         <br>
         <div class="signup">
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <legend>Profile</legend>
                 {% for item in form %}

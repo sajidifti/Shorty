@@ -14,6 +14,9 @@ from .decorators import unauthenticated_users_only, authenticated_users_only
 
 @unauthenticated_users_only
 def customSignup(request):
+    """
+    Signup view
+    """
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
         if form.is_valid():
@@ -36,6 +39,9 @@ def customSignup(request):
 
 @authenticated_users_only
 def customLogout(request):
+    """
+    Logout view
+    """
     logout(request)
     messages.info(request, "Logged out successfully!")
     return redirect("home")
@@ -43,6 +49,9 @@ def customLogout(request):
 
 @unauthenticated_users_only
 def customLogin(request):
+    """
+    Login view
+    """
     next_url = request.GET.get("next")
 
     if request.method == "POST":
@@ -87,6 +96,9 @@ def customLogin(request):
 
 @login_required
 def profile(request):
+    """
+    Profile view
+    """
     username = request.user.username
     user = get_user_model().objects.filter(username=username).first()
 
