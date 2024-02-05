@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 
-from .forms import UserSignUpForm, UserLoginForm
+from .forms import UserSignUpForm, UserLoginForm, UserUpdateForm
 from .decorators import unauthenticated_users_only, authenticated_users_only
 
 
@@ -83,3 +83,27 @@ def customLogin(request):
         form = UserLoginForm(request, initial=form_data)
 
     return render(request, "users/login.html", {"form": form})
+
+
+@login_required
+def profile(request):
+    username = request.user.username
+    user = get_user_model().objects.filter(username=username).first()
+
+    if request.method == "POST":
+        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect("profile")
+        else:
+            for field, error_messages in form.errors.items():
+                for error_message in error_messages:
+                    messages.error(request, error_message)
+            return redirect("profile")
+
+    else:  # GET request
+        form = UserUpdateForm(instance=user)
+
+    return render(request, "users/profile.html", {"form": form})
