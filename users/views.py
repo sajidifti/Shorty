@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, logout, authenticate
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 
 from .forms import UserSignUpForm, UserLoginForm, UserUpdateForm
-from .decorators import unauthenticated_users_only, authenticated_users_only
+from .decorators import unauthenticated_users_only, authenticated_users_only, admin_only
 
 
 # Create your views here.
@@ -20,16 +21,24 @@ def customSignup(request):
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
+            user = form.save(commit=False)
+
+            user.is_active = False
+            user.save()
+
+            group = Group.objects.get(name="generaluser")
+            user.groups.add(group)
+
+            # login(request, user)
             messages.success(
-                request, f"Account created successfully for {user.username}"
+                request,
+                f"Account created successfully for {user.username}. We sent a welcome email to {user.email}. Your request to sign up is under review. You will be notified once your account is approved. Thank you!",
             )
-            return redirect("home")
+            return redirect("login")
         else:
-            for error in list(form.errors.values()):
-                # print(error)
-                messages.error(request, error)
+            for field, error_messages in form.errors.items():
+                for error_message in error_messages:
+                    messages.error(request, error_message)
     else:
         form = UserSignUpForm()
 
@@ -56,12 +65,20 @@ def customLogin(request):
 
     if request.method == "POST":
         form = UserLoginForm(request, data=request.POST)
+        username = form.data.get("username")
+        user = get_user_model().objects.filter(username=username).first()
+
+        if user and not user.is_active:
+            messages.error(request, "Your account is inactive.")
+            return redirect("login")
         if form.is_valid():
+            print("valid")
             user = authenticate(
                 username=form.cleaned_data.get("username"),
                 password=form.cleaned_data.get("password"),
             )
-            if user is not None:
+            print("Authenticated")
+            if user is not None and user.is_active:
                 login(request, user)
                 # messages.info(request, f"Logged in as {user.username}")
 
@@ -69,7 +86,11 @@ def customLogin(request):
                     return redirect(next_url)
                 else:
                     return redirect("home")
+            else:
+                messages.error(request, "Your account is inactive.")
+                return redirect("login")
         else:
+            print("not valid")
             for field, error_messages in form.errors.items():
                 for error_message in error_messages:
                     if (
@@ -122,13 +143,16 @@ def profile(request):
 
 
 @login_required
+@admin_only
 def customadmin(request):
     """
     Admin view
     """
     return render(request, "users/admin.html")
 
+
 @login_required
+@admin_only
 def allusers(request):
     """
     allusers view

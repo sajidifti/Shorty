@@ -15,11 +15,11 @@ def unauthenticated_users_only(function=None, redirect_url="home"):
         return decorator
     else:
         return decorator(function)
-    
+
 
 def authenticated_users_only(function=None, redirect_url="home"):
     """
-    Allows access to only unauthenticated users
+    Allows access to only authenticated users
     """
 
     def decorator(view_func):
@@ -32,3 +32,22 @@ def authenticated_users_only(function=None, redirect_url="home"):
         return decorator
     else:
         return decorator(function)
+
+
+def admin_only(view_func):
+    """
+    Allows Admin Only
+    """
+    def wrapper_function(request, *args, **kwargs):
+        group = None
+
+        if request.user.groups.exists():
+            group = request.user.groups.all()[0].name
+
+            if group == "generaluser":
+                return redirect("home")
+
+            if group == "admin":
+                return view_func(request, *args, **kwargs)
+
+    return wrapper_function

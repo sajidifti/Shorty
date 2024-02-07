@@ -36,6 +36,8 @@
                                     <a href="{% url "myurls" %}">My URLs</a>
                                 </li>
                             </div>
+
+                            {% if user.groups.all.0.name == 'admin' %}
                             <div class="curve-bg">
                                 <li class="bottom-active">
                                     <a href="{% url "allurls" %}">All URLs</a>
@@ -51,8 +53,9 @@
                                     <a href="{% url "allusers" %}">Users</a>
                                 </li>
                             </div>
+                            {% endif %}
                             <div class="curve-bg">
-                                <div class="dummy"></div>
+                                <div class="dummy {% if user.groups.all.0.name == 'generaluser' %}bottom-active{% endif %}"></div>
                             </div>
                         </ul>
                     </div>
