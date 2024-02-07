@@ -72,12 +72,10 @@ def customLogin(request):
             messages.error(request, "Your account is inactive.")
             return redirect("login")
         if form.is_valid():
-            print("valid")
             user = authenticate(
                 username=form.cleaned_data.get("username"),
                 password=form.cleaned_data.get("password"),
             )
-            print("Authenticated")
             if user is not None and user.is_active:
                 login(request, user)
                 # messages.info(request, f"Logged in as {user.username}")
@@ -90,7 +88,6 @@ def customLogin(request):
                 messages.error(request, "Your account is inactive.")
                 return redirect("login")
         else:
-            print("not valid")
             for field, error_messages in form.errors.items():
                 for error_message in error_messages:
                     if (
