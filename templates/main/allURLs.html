@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-        <title>Profile - Shorty</title>
+        <title>All URLs - Shorty</title>
     </head>
     <body>
         <div class="container">
@@ -32,17 +32,17 @@
                                 </li>
                             </div>
                             <div class="curve-bg">
-                                <li class="">
+                                <li class="top-active">
                                     <a href="{% url "myurls" %}">My URLs</a>
                                 </li>
                             </div>
                             <div class="curve-bg">
-                                <li class="">
+                                <li class="active">
                                     <a href="{% url "allurls" %}">All URLs</a>
                                 </li>
                             </div>
                             <div class="curve-bg">
-                                <li class="">
+                                <li class="bottom-active">
                                     <a href="{% url "customadmin" %}">Admin</a>
                                 </li>
                             </div>
@@ -62,7 +62,7 @@
                         <li>
                             {% if user.is_authenticated %}
                                 <a href="{% url 'profile' %}">
-                                    <div class="profile-container profile-active">
+                                    <div class="profile-container">
                                         <div class="photo">
                                             <img src="{{ user.image.url }}" alt="Profile Photo" class="profile-photo">
                                         </div>
@@ -80,7 +80,7 @@
                 </div>
             </div>
             <div class="right">
-                <div class="form-container">
+                <div class="users-form-container">
                     {% if messages %}
                         {% for message in messages %}
                             <div class="message-container">
@@ -88,65 +88,24 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <form action=""
-                          method="post"
-                          enctype="multipart/form-data"
-                          class="login-form">
-                        {% csrf_token %}
-                        <h2>Profile</h2>
-                        <label for="id_image" class="profile-image">
-                            <img id="preview-image" src="{% if form.instance.image %}{{ form.instance.image.url }}{% else %}{% static "images/default_photo.jpg" %}{% endif %}" alt="Profile Image" width="200px" height="200px">
-                            <input type="file"
-                                   name="image"
-                                   accept="image/*"
-                                   id="id_image"
-                                   onchange="previewImage(event)">
-                        </label>
-                        <br>
-                        <input type="text"
-                               name="username"
-                               value="{{ form.instance.username }}"
-                               maxlength="150"
-                               required
-                               id="id_username">
-                        <br>
-                        <input type="email"
-                               name="email"
-                               value="{{ form.instance.email }}"
-                               maxlength="320"
-                               required
-                               id="id_email">
-                        <br>
-                        <input type="text"
-                               name="first_name"
-                               value="{{ form.instance.first_name }}"
-                               maxlength="150"
-                               id="id_first_name">
-                        <br>
-                        <input type="text"
-                               name="last_name"
-                               value="{{ form.instance.last_name }}"
-                               maxlength="150"
-                               id="id_last_name">
-                        <button type="submit">Save</button>
-                        <div class="buttons">
-                            <a href="{% url 'home' %}">Change Password</a>
-                            <a href="{% url 'home' %}">Delete Account</a>
-                            <a href="{% url 'logout' %}">Logout</a>
-                        </div>
-                    </form>
+                    <form action="" class="users-form" method="post">
+                        <h2>All URLs</h2>
+                        <table>
+                            <tr>
+                                <th>Original</th>
+                                <th>Shortened</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                            <tr>
+                                <td>https://sajidifti.github.io</td>
+                                <td>sajidifti.com/github</td>
+                                <td>
+                                    <button type="submit">Delete</button>
+                                </td>
+                            </tr>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-        <script>
-            function previewImage(event) {
-                var reader = new FileReader();
-                reader.onload = function() {
-                    var output = document.getElementById('preview-image');
-                    output.src = reader.result;
-                };
-                reader.readAsDataURL(event.target.files[0]);
-            }
-        </script>
-    </body>
-</html>
+        </body>
+    </html>

@@ -1,35 +1,40 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.template.defaultfilters import slugify
+from PIL import Image
 import os
 
 
-# Create your models here.
 class CustomUser(AbstractUser):
     """
     Custom user model.
     """
 
-    def image_upload_to(self, instance=None):
+    def image_upload_to(self, filename):
         """
         Upload image to user directory.
         """
-        if instance:
-            return os.path.join("profiles", self.username, instance)
+        return os.path.join("profiles", self.username, filename)
 
-        return None
+    email = models.EmailField(unique=True)
+    image = models.ImageField(default="default/default.png", upload_to=image_upload_to)
 
-    email = models.EmailField(
-        unique=True,
-    )
-
-    image = models.ImageField(
-        default="default/default.png",
-        upload_to=image_upload_to,
-    )
-
-    def __str__(self):
+    def save(self, *args, **kwargs):
         """
-        Return a string representation of the object.
+        Resize the image and delete old image before saving the user instance.
         """
-        return self.username
+        if self.pk:
+            old_instance = CustomUser.objects.get(pk=self.pk)
+            if self.image and self.image != old_instance.image:
+
+                # if the old image is not default.png, delete it
+                if old_instance.image.name != "default/default.png":
+                    old_instance.image.delete(save=False)
+
+        # Resize the new image before saving
+        super().save(*args, **kwargs)
+        img = Image.open(self.image.path)
+
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

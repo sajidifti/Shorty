@@ -63,7 +63,7 @@ def customLogin(request):
             )
             if user is not None:
                 login(request, user)
-                messages.info(request, f"Logged in as {user.username}")
+                # messages.info(request, f"Logged in as {user.username}")
 
                 if next_url:
                     return redirect(next_url)
@@ -119,3 +119,18 @@ def profile(request):
         form = UserUpdateForm(instance=user)
 
     return render(request, "users/profile.html", {"form": form})
+
+
+@login_required
+def customadmin(request):
+    """
+    Admin view
+    """
+    return render(request, "users/admin.html")
+
+@login_required
+def allusers(request):
+    """
+    allusers view
+    """
+    return render(request, "users/users.html")

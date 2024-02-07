@@ -10,9 +10,38 @@ class UserSignUpForm(UserCreationForm):
     """
     Custom User Sign Up Form
     """
-
+    username = forms.CharField(
+        max_length=150,
+        help_text="Required. 150 characters or fewer. Letters, digits, and @/./+/-/_ only.",
+        widget=forms.TextInput(attrs={"placeholder": "Username"}),
+    )
+    
     email = forms.EmailField(
-        help_text="Required. Add a valid email address.", required=True
+        help_text="Required. Add a valid email address.",
+        required=True,
+        widget=forms.EmailInput(attrs={"placeholder": "Email"}),
+    )
+
+    first_name = forms.CharField(
+        max_length=30,
+        help_text="Your first name.",
+        widget=forms.TextInput(attrs={"placeholder": "First Name"}),
+    )
+
+    last_name = forms.CharField(
+        max_length=30,
+        help_text="Your last name.",
+        widget=forms.TextInput(attrs={"placeholder": "Last Name"}),
+    )
+
+    password1 = forms.CharField(
+        help_text="Enter a password. It should not be too similar to your other personal information or a commonly used password.",
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"}),
+    )
+
+    password2 = forms.CharField(
+        help_text="Enter the same password as before, for verification.",
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"}),
     )
 
     class Meta:
