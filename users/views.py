@@ -142,16 +142,58 @@ def profile(request):
 @login_required
 @admin_only
 def customadmin(request):
-    """
-    Admin view
-    """
-    return render(request, "users/admin.html")
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        user = get_user_model().objects.filter(id=user_id).first()
+
+        if user is None:
+            messages.error(request, "User not found.")
+            return redirect("customadmin")
+
+        action_approve = request.POST.get("action_approve")
+        action_delete = request.POST.get("action_delete")
+
+        if action_approve == "approve":
+            user.is_active = True
+            user.save()
+            messages.success(request, f"User '{user.username}' approved successfully.")
+        elif action_delete == "delete":
+            user.delete()
+            messages.warning(request, f"User '{user.username}' deleted.")
+
+        return redirect(
+            "customadmin"
+        )
+
+    inactive_users = get_user_model().objects.filter(is_active=False)
+    return render(request, "users/admin.html", {"inactive_users": inactive_users})
 
 
 @login_required
 @admin_only
 def allusers(request):
-    """
-    allusers view
-    """
-    return render(request, "users/users.html")
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        user = get_user_model().objects.filter(id=user_id).first()
+
+        if user is None:
+            messages.error(request, "User not found.")
+            return redirect("customadmin")
+
+        action_deactivate = request.POST.get("action_deactivate")
+        action_delete = request.POST.get("action_delete")
+
+        if action_deactivate == "deactivate":
+            user.is_active = False
+            user.save()
+            messages.success(request, f"User '{user.username}' deactivated successfully.")
+        elif action_delete == "delete":
+            user.delete()
+            messages.warning(request, f"User '{user.username}' deleted.")
+
+        return redirect(
+            "allusers"
+        )
+
+    active_users = get_user_model().objects.filter(is_active=True)
+    return render(request, "users/users.html", {"active_users": active_users})

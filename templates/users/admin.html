@@ -88,7 +88,7 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <form action="" class="users-form" method="post">
+                    {% if inactive_users %}
                         <h2>Sign Up Requests</h2>
                         <table>
                             <tr>
@@ -99,21 +99,33 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                             </tr>
-                            <tr>
-                                <td>sifti</td>
-                                <td>Yp0kK@example.com</td>
-                                <td>Sifti</td>
-                                <td>Uddin</td>
-                                <td>
-                                    <button type="submit">Approve</button>
-                                </td>
-                                <td>
-                                    <button type="submit">Reject</button>
-                                </td>
-                            </tr>
-                        </form>
-                    </div>
+                            {% for user in inactive_users %}
+                                <form action="" class="users-form" method="post">
+                                    {% csrf_token %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.first_name }}</td>
+                                        <td>{{ user.last_name }}</td>
+                                        <td>
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="hidden" name="action_approve" value="approve">
+                                            <button type="submit" name="action" value="approve" class="form-btn">Approve</button>
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                                            <input type="hidden" name="action_delete" value="delete">
+                                            <button type="submit" name="action" value="delete" class="form-btn">Delete</button>
+                                        </td>
+                                    </tr>
+                                </form>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        <h2>No inactive users found.</h2>
+                    {% endif %}
                 </div>
             </div>
-        </body>
-    </html>
+        </div>
+    </body>
+</html>

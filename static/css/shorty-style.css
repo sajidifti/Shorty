@@ -320,6 +320,7 @@ body {
   justify-content: center;
   align-items: center;
   /* text-align: center; */
+  flex-direction: column;
 }
 
 .users-form {
@@ -337,10 +338,12 @@ body {
 
 .users-form table th,
 td {
+  /* width: 400px; */
   text-align: start;
   padding: 10px;
 }
 
+.form-btn,
 .users-form button {
   padding: 10px;
   width: 100px;
