@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+        <!-- favicon -->
+        <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>Profile - Shorty</title>
     </head>
     <body>
@@ -36,24 +38,26 @@
                                     <a href="{% url "myurls" %}">My URLs</a>
                                 </li>
                             </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allurls" %}">All URLs</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "customadmin" %}">Admin</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allusers" %}">Users</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <div class="dummy"></div>
-                            </div>
+                            {% if user.groups.all.0.name == 'admin' %}
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allurls" %}">All URLs</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "customadmin" %}">Admin</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allusers" %}">Users</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <div class="dummy"></div>
+                                </div>
+                            {% endif %}
                         </ul>
                     </div>
                 </div>
@@ -108,14 +112,16 @@
                                value="{{ form.instance.username }}"
                                maxlength="150"
                                required
-                               id="id_username">
+                               id="id_username"
+                               disabled>
                         <br>
                         <input type="email"
                                name="email"
                                value="{{ form.instance.email }}"
                                maxlength="320"
                                required
-                               id="id_email">
+                               id="id_email"
+                               disabled>
                         <br>
                         <input type="text"
                                name="first_name"

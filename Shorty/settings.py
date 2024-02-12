@@ -153,3 +153,17 @@ RECAPTCHA_PRIVATE_KEY = credentials.RECAPTCHA_PRIVATE_KEY_ORIGINAL
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# EMAIL
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Credentials
+EMAIL_FROM = credentials.EMAIL_FROM
+EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
+
+
+PASSWORD_RESET_TIMEOUT_DAYS = 1

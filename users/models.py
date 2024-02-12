@@ -16,6 +16,7 @@ class CustomUser(AbstractUser):
         return os.path.join("profiles", self.username, filename)
 
     email = models.EmailField(unique=True)
+    activation_email_sent = models.BooleanField(default=False)
     image = models.ImageField(default="default/default.png", upload_to=image_upload_to)
 
     def save(self, *args, **kwargs):

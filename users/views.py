@@ -2,15 +2,81 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, logout, authenticate
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+
 
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 from .forms import UserSignUpForm, UserLoginForm, UserUpdateForm
 from .decorators import unauthenticated_users_only, authenticated_users_only, admin_only
+from .tokens import account_activation_token
 
 
 # Create your views here.
+
+
+def activate(request, uidb64, token):
+    User = get_user_model()
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+    
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        
+        messages.success(request, f"Account activated. You can now login.")
+        return redirect("login")
+    else:
+        messages.error(request, f"Invalid activation link.")
+
+    return redirect("login")
+
+
+def activationEmail(request, user, to_email):
+    subject = "Activate your account"
+    message = render_to_string(
+        "users/activate_account.html",
+        {
+            "user": user.username,
+            "domain": get_current_site(request).domain,
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+            "token": account_activation_token.make_token(user),
+            "protocol": "https" if request.is_secure() else "http",
+        },
+    )
+
+    sender_name = "Shorty"
+    sender_email = "services@sajidifti.com"
+
+    email = EmailMessage(
+        subject, message, from_email=f"{sender_name} <{sender_email}>", to=[to_email]
+    )
+
+    try:
+        email.send()
+        messages.success(request, f"Activation email sent to {user.email}.")
+    except:
+        messages.error(request, f"Email sending failed for {user.email}.")
+
+
+def notificationEmail(request, subject, message, to_email):
+    sender_name = "Shorty"
+    sender_email = "services@sajidifti.com"
+
+    email = EmailMessage(
+        subject, message, from_email=f"{sender_name} <{sender_email}>", to=[to_email]
+    )
+
+    email.send()
 
 
 @unauthenticated_users_only
@@ -154,18 +220,18 @@ def customadmin(request):
         action_delete = request.POST.get("action_delete")
 
         if action_approve == "approve":
-            user.is_active = True
+            # user.is_active = True
+            user.activation_email_sent = True
             user.save()
+            activationEmail(request, user, user.email)
             messages.success(request, f"User '{user.username}' approved successfully.")
         elif action_delete == "delete":
             user.delete()
             messages.warning(request, f"User '{user.username}' deleted.")
 
-        return redirect(
-            "customadmin"
-        )
+        return redirect("customadmin")
 
-    inactive_users = get_user_model().objects.filter(is_active=False)
+    inactive_users = get_user_model().objects.filter(is_active=False, activation_email_sent=False)
     return render(request, "users/admin.html", {"inactive_users": inactive_users})
 
 
@@ -185,15 +251,16 @@ def allusers(request):
 
         if action_deactivate == "deactivate":
             user.is_active = False
+            user.activation_email_sent = False
             user.save()
-            messages.success(request, f"User '{user.username}' deactivated successfully.")
+            messages.success(
+                request, f"User '{user.username}' deactivated successfully."
+            )
         elif action_delete == "delete":
             user.delete()
             messages.warning(request, f"User '{user.username}' deleted.")
 
-        return redirect(
-            "allusers"
-        )
+        return redirect("allusers")
 
     active_users = get_user_model().objects.filter(is_active=True)
     return render(request, "users/users.html", {"active_users": active_users})
