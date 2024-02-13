@@ -113,7 +113,7 @@
                                maxlength="150"
                                required
                                id="id_username"
-                               disabled>
+                               >
                         <br>
                         <input type="email"
                                name="email"
@@ -121,7 +121,7 @@
                                maxlength="320"
                                required
                                id="id_email"
-                               disabled>
+                               >
                         <br>
                         <input type="text"
                                name="first_name"
@@ -136,7 +136,7 @@
                                id="id_last_name">
                         <button type="submit">Save</button>
                         <div class="buttons">
-                            <a href="{% url 'home' %}">Change Password</a>
+                            <a href="{% url 'changepassword' %}">Change Password</a>
                             <a href="{% url 'home' %}">Delete Account</a>
                             <a href="{% url 'logout' %}">Logout</a>
                         </div>

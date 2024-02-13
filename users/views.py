@@ -6,13 +6,20 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.db.models import Q
 
 
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.template.loader import render_to_string
 
-from .forms import UserSignUpForm, UserLoginForm, UserUpdateForm
+from .forms import (
+    UserSignUpForm,
+    UserLoginForm,
+    UserUpdateForm,
+    SetPasswordForm,
+    PasswordResetForm,
+)
 from .decorators import unauthenticated_users_only, authenticated_users_only, admin_only
 from .tokens import account_activation_token
 
@@ -28,11 +35,11 @@ def activate(request, uidb64, token):
         user = User.objects.get(pk=uid)
     except:
         user = None
-    
+
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        
+
         messages.success(request, f"Account activated. You can now login.")
         return redirect("login")
     else:
@@ -40,13 +47,42 @@ def activate(request, uidb64, token):
 
     return redirect("login")
 
+def verifyReset(request, uidb64, token):
+    User = get_user_model()
+    allerrors = ""
 
-def activationEmail(request, user, to_email):
-    subject = "Activate your account"
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        if request.method == "POST":
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, f"Password reset successful. You can now login.")
+                return redirect("login")
+            else:
+                for field, error_messages in form.errors.items():
+                    for error_message in error_messages:
+                        allerrors = allerrors + " " + error_message
+                messages.error(request, allerrors)
+
+        form = SetPasswordForm(user)
+        return render(request, "users/newpassword.html", {"form": form})
+    else:
+        messages.error(request, f"Invalid password reset link.")
+
+    return redirect("login")
+
+
+def tokenEmail(request, user, to_email, subject, template, puspose):
     message = render_to_string(
-        "users/activate_account.html",
+        template,
         {
-            "user": user.username,
+            "user": user.first_name,
             "domain": get_current_site(request).domain,
             "uid": urlsafe_base64_encode(force_bytes(user.pk)),
             "token": account_activation_token.make_token(user),
@@ -63,7 +99,16 @@ def activationEmail(request, user, to_email):
 
     try:
         email.send()
-        messages.success(request, f"Activation email sent to {user.email}.")
+        if puspose == "activation":
+            messages.success(
+                request,
+                f"{user.username} has been activated. Activation email sent to {user.email}.",
+            )
+        elif puspose == "resetpassword":
+            messages.success(
+                request,
+                f"Password reset email sent to {user.email}. If you don't receive an email, please check your spam folder.",
+            )
     except:
         messages.error(request, f"Email sending failed for {user.email}.")
 
@@ -76,14 +121,19 @@ def notificationEmail(request, subject, message, to_email):
         subject, message, from_email=f"{sender_name} <{sender_email}>", to=[to_email]
     )
 
-    email.send()
+    try:
+        email.send()
+    except:
+        messages.error(request, f"Email sending failed for {to_email}.")
 
 
+# Core Account Views
 @unauthenticated_users_only
 def customSignup(request):
     """
     Signup view
     """
+    allerrors = ""
     if request.method == "POST":
         form = UserSignUpForm(request.POST)
         if form.is_valid():
@@ -98,13 +148,15 @@ def customSignup(request):
             # login(request, user)
             messages.success(
                 request,
-                f"Account created successfully for {user.username}. We sent a welcome email to {user.email}. Your request to sign up is under review. You will be notified once your account is approved. Thank you!",
+                f"Account created successfully for {user.username}.\nWe sent a welcome email to {user.email}.\nYour request to sign up is under review.\nYou will be notified once your account is approved.\nThank you!",
             )
             return redirect("login")
         else:
             for field, error_messages in form.errors.items():
                 for error_message in error_messages:
-                    messages.error(request, error_message)
+                    allerrors = allerrors + " " + error_message
+
+            messages.error(request, allerrors)
     else:
         form = UserSignUpForm()
 
@@ -127,6 +179,7 @@ def customLogin(request):
     """
     Login view
     """
+    allerrors = ""
     next_url = request.GET.get("next")
 
     if request.method == "POST":
@@ -161,9 +214,13 @@ def customLogin(request):
                         and error_message == "This field is required."
                     ):
                         custom_error_message = "You must pass the reCAPTCHA test. "
-                        messages.error(request, custom_error_message)
+                        # messages.error(request, custom_error_message)
+                        allerrors = allerrors + " " + custom_error_message
                     else:
-                        messages.error(request, error_message)
+                        # messages.error(request, error_message)
+                        allerrors = allerrors + " " + error_message
+
+            messages.error(request, allerrors)
 
             # Store form data in session only if there's a validation error
             request.session["login_form_data"] = form.cleaned_data
@@ -179,10 +236,72 @@ def customLogin(request):
 
 
 @login_required
+def change_password(request):
+    user = request.user
+    allerrors = ""
+
+    if request.method == "POST":
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, "Password changed successfully! Please login again."
+            )
+            return redirect("profile")
+        else:
+            for field, error_messages in form.errors.items():
+                for error_message in error_messages:
+                    allerrors = allerrors + " " + error_message
+
+            messages.error(request, allerrors)
+            return redirect("changepassword")
+
+    form = SetPasswordForm(user)
+    return render(request, "users/changepassword.html", {"form": form})
+
+
+@unauthenticated_users_only
+def reset_password(request):
+    """
+    Reset password view
+    """
+    allerrors = ""
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            user_email = form.cleaned_data["email"]
+            associated_user = (
+                get_user_model().objects.filter(Q(email=user_email)).first()
+            )
+            if associated_user:
+                tokenEmail(
+                    request,
+                    associated_user,
+                    associated_user.email,
+                    "Reset Your Password",
+                    "users/reset_password_email.html",
+                    "resetpassword",
+                )
+                return redirect("login")
+            else:
+                messages.error(request, "Email not found.")
+                return redirect("resetpassword")
+        else:
+            for field, error_messages in form.errors.items():
+                for error_message in error_messages:
+                    allerrors = allerrors + " " + error_message
+            messages.error(request, allerrors)
+            return redirect("passwordreset")
+    form = PasswordResetForm()
+    return render(request, "users/passwordreset.html", {"form": form})
+
+
+@login_required
 def profile(request):
     """
     Profile view
     """
+    allerrors = ""
     username = request.user.username
     user = get_user_model().objects.filter(username=username).first()
 
@@ -196,7 +315,9 @@ def profile(request):
         else:
             for field, error_messages in form.errors.items():
                 for error_message in error_messages:
-                    messages.error(request, error_message)
+                    allerrors = allerrors + " " + error_message
+
+            messages.error(request, allerrors)
             return redirect("profile")
 
     else:  # GET request
@@ -223,15 +344,24 @@ def customadmin(request):
             # user.is_active = True
             user.activation_email_sent = True
             user.save()
-            activationEmail(request, user, user.email)
-            messages.success(request, f"User '{user.username}' approved successfully.")
+            tokenEmail(
+                request,
+                user,
+                user.email,
+                "Activate Your Account",
+                "users/activate_account.html",
+                "activation",
+            )
+            # messages.success(request, f"User '{user.username}' approved successfully.")
         elif action_delete == "delete":
             user.delete()
             messages.warning(request, f"User '{user.username}' deleted.")
 
         return redirect("customadmin")
 
-    inactive_users = get_user_model().objects.filter(is_active=False, activation_email_sent=False)
+    inactive_users = get_user_model().objects.filter(
+        is_active=False, activation_email_sent=False
+    )
     return render(request, "users/admin.html", {"inactive_users": inactive_users})
 
 
