@@ -103,7 +103,7 @@
                                     {% csrf_token %}
                                     <tr>
                                         <td>{{ url.original_url }}</td>
-                                        <td>{{ url.custom_url }}</td>
+                                        <td>https://sajidifti.com/{{ url.custom_url }}</td>
                                         <td>
                                             <input type="hidden" name="url_id" value="{{ url.id }}">
                                             <button type="submit" class="form-btn">Delete</button>
