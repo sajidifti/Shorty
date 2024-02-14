@@ -94,15 +94,16 @@
                         {% endfor %}
                     {% endif %}
                     <form action="" class="login-form" method="post">
+                        {% csrf_token %}
                         <h2>Shorten Your URL with Shorty</h2>
-                        <input type="text" name="originalurl" placeholder="Enter URL" required>
+                        <input type="text" name="original_url" placeholder="Enter URL" required>
                         <div class="custom-url">
                             <div class="sajidifti">
                                 <p>sajidifti.com/</p>
                             </div>
                             <div class="customfield">
                                 <input type="text"
-                                       name="customurl"
+                                       name="custom_url"
                                        placeholder="Enter Custom URL (Optional)">
                             </div>
                         </div>

@@ -10,7 +10,7 @@
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
         <!-- favicon -->
-        <link rel="icon" type="image/x-icon" href="images/fav.png">
+        <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>New - Shorty</title>
     </head>
     <body>
@@ -90,22 +90,44 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <form action="" class="login-form" method="post">
+                    <form class="login-form">
                         <h2>URL Shortened</h2>
                         <input type="text"
                                name="originalurl"
-                               placeholder="Enter URL"
-                               required
-                               disabled>
+                               disabled
+                               value="{{ url_shortener.original_url }}">
                         <input type="text"
-                               name="originalurl"
-                               placeholder="Enter URL"
-                               required
-                               disabled>
-                        <button type="submit">Copy</button>
+                               id="shortened-url"
+                               name="shortenedurl"
+                               disabled
+                               value="https://sajidifti.com/{{ url_shortener.custom_url }}">
+                        <div class="tooltip">
+                            <button onclick="copyToClipboard(event)" onmouseout="outFunc()">
+                                <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>
+                                Copy text
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
+        <script>
+            function copyToClipboard(event) {
+                event.preventDefault();
+
+                var copyText = document.getElementById("shortened-url");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+
+                var tooltip = document.getElementById("myTooltip");
+                tooltip.innerHTML = "Copied: " + copyText.value;
+            }
+
+            function outFunc() {
+                var tooltip = document.getElementById("myTooltip");
+                tooltip.innerHTML = "Copy to clipboard";
+            }
+        </script>
     </body>
 </html>
