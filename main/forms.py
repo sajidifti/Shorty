@@ -30,7 +30,7 @@ class URLShortenerForm(forms.ModelForm):
 
             cleaned_data["custom_url"] = custom_url
 
-        if URLShortener.objects.filter(original_url=original_url).exists():
-            self.add_error("original_url", "URL already exists.")
+        # if URLShortener.objects.filter(original_url=original_url).exists():
+        #     self.add_error("original_url", "URL already exists.")
 
         return cleaned_data

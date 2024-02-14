@@ -3,7 +3,7 @@ from django.conf import settings
 
 class URLShortener(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    original_url = models.URLField(unique=True)
+    original_url = models.URLField(unique=False)
     custom_url = models.CharField(max_length=100, unique=True, blank=True, null=True)
 
     def __str__(self):
