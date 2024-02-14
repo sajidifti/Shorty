@@ -38,21 +38,23 @@
                                     <a href="{% url "myurls" %}">My URLs</a>
                                 </li>
                             </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allurls" %}">All URLs</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "customadmin" %}">Admin</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allusers" %}">Users</a>
-                                </li>
-                            </div>
+                            {% if user.groups.all.0.name == 'admin' %}
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allurls" %}">All URLs</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "customadmin" %}">Admin</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allusers" %}">Users</a>
+                                    </li>
+                                </div>
+                            {% endif %}
                             <div class="curve-bg">
                                 <div class="dummy"></div>
                             </div>

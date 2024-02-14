@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                      <!-- favicon -->
+        <!-- favicon -->
         <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>All URLs - Shorty</title>
     </head>
@@ -90,7 +90,7 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <form action="" class="users-form" method="post">
+                    {% if urls %}
                         <h2>All URLs</h2>
                         <table>
                             <tr>
@@ -98,16 +98,25 @@
                                 <th>Shortened</th>
                                 <th>&nbsp;</th>
                             </tr>
-                            <tr>
-                                <td>https://sajidifti.github.io</td>
-                                <td>sajidifti.com/github</td>
-                                <td>
-                                    <button type="submit">Delete</button>
-                                </td>
-                            </tr>
-                        </form>
-                    </div>
+                            {% for url in urls %}
+                                <form action="" class="users-form" method="post">
+                                    {% csrf_token %}
+                                    <tr>
+                                        <td>{{ url.original_url }}</td>
+                                        <td>{{ url.custom_url }}</td>
+                                        <td>
+                                            <input type="hidden" name="url_id" value="{{ url.id }}">
+                                            <button type="submit" class="form-btn">Delete</button>
+                                        </td>
+                                    </tr>
+                                </form>
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        <h2>No URLs found.</h2>
+                    {% endif %}
                 </div>
             </div>
-        </body>
-    </html>
+        </div>
+    </body>
+</html>
