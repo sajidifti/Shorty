@@ -13,9 +13,9 @@ def home(request):
     allerrors = ""
 
     if request.method == "POST":
-        form = URLShortenerForm(request.POST)
-        if form.is_valid():
+        form = URLShortenerForm(data=request.POST)
 
+        if form.is_valid():
             url_shortener = form.save(commit=False)
             url_shortener.user = request.user
             url_shortener.save()
@@ -27,9 +27,15 @@ def home(request):
                 for error_message in error_messages:
                     allerrors = allerrors + " " + error_message
             messages.error(request, allerrors)
-            return redirect("home")
 
-    form = URLShortenerForm()
+            request.session["shortner_form_data"] = form.cleaned_data
+            return redirect(request.path)
+    else:
+        form = URLShortenerForm()
+        # Repopulate the form with previous form data
+        form_data = request.session.pop("shortner_form_data", {})
+        form = URLShortenerForm(initial=form_data)
+
     return render(request, "main/index.html", {"form": form})
 
 

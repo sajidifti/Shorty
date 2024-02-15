@@ -40,21 +40,21 @@
                             </div>
                             {% comment %} Admin Only {% endcomment %}
                             {% if user.groups.all.0.name == 'admin' %}
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allurls" %}">All URLs</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "customadmin" %}">Admin</a>
-                                </li>
-                            </div>
-                            <div class="curve-bg">
-                                <li class="">
-                                    <a href="{% url "allusers" %}">Users</a>
-                                </li>
-                            </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allurls" %}">All URLs</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "customadmin" %}">Admin</a>
+                                    </li>
+                                </div>
+                                <div class="curve-bg">
+                                    <li class="">
+                                        <a href="{% url "allusers" %}">Users</a>
+                                    </li>
+                                </div>
                             {% endif %}
                             <div class="curve-bg">
                                 <div class="dummy"></div>
@@ -96,7 +96,11 @@
                     <form action="" class="login-form" method="post">
                         {% csrf_token %}
                         <h2>Shorten Your URL with Shorty</h2>
-                        <input type="text" name="original_url" placeholder="Enter URL" required>
+                        <input type="text"
+                               name="original_url"
+                               placeholder="Enter URL"
+                               required
+                               value="{% if form.original_url.value %}{{ form.original_url.value }}{% endif %}">
                         <div class="custom-url">
                             <div class="sajidifti">
                                 <p>sajidifti.com/</p>
@@ -104,7 +108,8 @@
                             <div class="customfield">
                                 <input type="text"
                                        name="custom_url"
-                                       placeholder="Enter Custom URL (Optional)">
+                                       placeholder="Enter Custom URL (Optional)"
+                                       value="{% if form.custom_url.value %}{{ form.custom_url.value }}{% endif %}">
                             </div>
                         </div>
                         <button type="submit">Shorten</button>
