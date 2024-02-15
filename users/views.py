@@ -26,7 +26,7 @@ from .tokens import account_activation_token
 
 # Create your views here.
 
-
+@unauthenticated_users_only
 def activate(request, uidb64, token):
     User = get_user_model()
 
@@ -47,6 +47,7 @@ def activate(request, uidb64, token):
 
     return redirect("login")
 
+@unauthenticated_users_only
 def verifyReset(request, uidb64, token):
     User = get_user_model()
     allerrors = ""
@@ -77,7 +78,7 @@ def verifyReset(request, uidb64, token):
 
     return redirect("login")
 
-
+@unauthenticated_users_only
 def tokenEmail(request, user, to_email, subject, template, puspose):
     message = render_to_string(
         template,

@@ -5,6 +5,7 @@ from django.http import Http404
 from django.contrib import messages
 from .forms import URLShortenerForm
 from .models import URLShortener
+from django.contrib.sites.shortcuts import get_current_site
 
 
 @login_required
@@ -51,7 +52,14 @@ def allurls(request):
         return redirect("allurls")
 
     urls = URLShortener.objects.all()
-    return render(request, "main/allURLs.html", {"urls": urls})
+    return render(
+        request,
+        "main/allURLs.html",
+        {
+            "urls": urls,
+            "domain": get_current_site(request).domain,
+        },
+    )
 
 
 @login_required
@@ -67,7 +75,14 @@ def myurls(request):
 
     urls = URLShortener.objects.filter(user=user)
 
-    return render(request, "main/myURLs.html", {"urls": urls})
+    return render(
+        request,
+        "main/myURLs.html",
+        {
+            "urls": urls,
+            "domain": get_current_site(request).domain,
+        },
+    )
 
 
 @login_required
@@ -76,7 +91,14 @@ def shortened(request, pk):
     url_shortener = get_object_or_404(URLShortener, pk=pk)
     url_user = url_shortener.user
 
-    if user != url_user:
+    if user != url_user and user.groups.all()[0].name == "generaluser":
         return redirect("home")
 
-    return render(request, "main/shortened.html", {"url_shortener": url_shortener})
+    return render(
+        request,
+        "main/shortened.html",
+        {
+            "url_shortener": url_shortener,
+            "domain": get_current_site(request).domain,
+        },
+    )

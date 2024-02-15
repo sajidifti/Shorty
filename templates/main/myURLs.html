@@ -99,13 +99,17 @@
                                 <th>Original</th>
                                 <th>Shortened</th>
                                 <th>&nbsp;</th>
+                                <th>&nbsp;</th>
                             </tr>
                             {% for url in urls %}
                                 <form action="" class="users-form" method="post">
                                     {% csrf_token %}
                                     <tr>
                                         <td>{{ url.original_url }}</td>
-                                        <td>https://sajidifti.com/{{ url.custom_url }}</td>
+                                        <td>{{ domain }}/{{ url.custom_url }}</td>
+                                        <td>
+                                            <a href="{% url 'shortened' url.id %}" class="form-btn">View</a>
+                                        </td>
                                         <td>
                                             <input type="hidden" name="url_id" value="{{ url.id }}">
                                             <button type="submit" class="form-btn">Delete</button>

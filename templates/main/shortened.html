@@ -96,13 +96,11 @@
                         <h2>URL Shortened</h2>
                         <input type="text"
                                name="originalurl"
-                               disabled
                                value="{{ url_shortener.original_url }}">
                         <input type="text"
                                id="shortened-url"
                                name="shortenedurl"
-                               disabled
-                               value="https://sajidifti.com/{{ url_shortener.custom_url }}">
+                               value="{{ domain }}/{{ url_shortener.custom_url }}">
                         <div class="tooltip">
                             <button onclick="copyToClipboard(event)" onmouseout="outFunc()">
                                 <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>

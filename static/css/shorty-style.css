@@ -345,6 +345,7 @@ td {
 
 .form-btn,
 .users-form button {
+  text-decoration: none;
   padding: 10px;
   width: 100px;
   background-color: var(--left-panel-bg-color);
