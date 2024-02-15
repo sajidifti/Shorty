@@ -1,8 +1,8 @@
-# Shortly - URL Shortener
+# Shorty - URL Shortener
 
 It is an URL shortener built with Django. This functionality is meant for sajidifti.com. It is integrated with my website.
 <br>
-Please Visit: <https://sajidifti.com/Shorty>
+Please Visit: <https://Shorty.SajidIfti.com>
 
 ## Features
 
