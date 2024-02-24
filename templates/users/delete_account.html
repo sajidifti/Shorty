@@ -11,7 +11,7 @@
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
         <!-- favicon -->
         <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
-        <title>Profile - Shorty</title>
+        <title>Delete Account - Shorty</title>
     </head>
     <body>
         <div class="container">
@@ -97,49 +97,12 @@
                           enctype="multipart/form-data"
                           class="login-form">
                         {% csrf_token %}
-                        <h2>Profile</h2>
-                        <label for="id_image" class="profile-image">
-                            <img id="preview-image" src="{% if form.instance.image %}{{ form.instance.image.url }}{% else %}{% static "images/default_photo.jpg" %}{% endif %}" alt="Profile Image" width="200px" height="200px">
-                            <input type="file"
-                                   name="image"
-                                   accept="image/*"
-                                   id="id_image"
-                                   onchange="previewImage(event)">
-                        </label>
-                        <br>
-                        <input type="text"
-                               name="username"
-                               value="{{ form.instance.username }}"
-                               maxlength="150"
-                               required
-                               id="id_username">
-                        <br>
-                        <input type="email"
-                               name="email"
-                               value="{{ form.instance.email }}"
-                               maxlength="320"
-                               required
-                               id="id_email">
-                        <br>
-                        <input type="text"
-                               name="first_name"
-                               value="{{ form.instance.first_name }}"
-                               maxlength="150"
-                               id="id_first_name">
-                        <br>
-                        <input type="text"
-                               name="last_name"
-                               value="{{ form.instance.last_name }}"
-                               maxlength="150"
-                               id="id_last_name">
-                        <button type="submit">Save</button>
-                        <div class="buttons">
-                            <a href="{% url 'changepassword' %}">Change Password</a>
-                            {% if user.groups.all.0.name != 'admin' %}
-                                <a href="{% url 'deleteaccount' %}">Delete Account</a>
-                            {% endif %}
-                            <a href="{% url 'logout' %}">Logout</a>
-                        </div>
+                        <h2>Do you really want to delete your account?</h2>
+                        <p>This action is not reversable. All your data will be deleted.</p>
+                        <button type="submit">Delete</button>
+                        <p>
+                            Go back to Profile <a href="{% url "profile" %}">Profile</a>
+                        </p>
                     </form>
                 </div>
             </div>

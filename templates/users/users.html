@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-                      <!-- favicon -->
+        <!-- favicon -->
         <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>Users - Shorty</title>
     </head>
@@ -90,7 +90,7 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    {% if active_users %}
+                    {% if active_users.count > 1 %}
                         <h2>Active Users</h2>
                         <table>
                             <tr>
@@ -113,7 +113,10 @@
                                             <td>
                                                 <input type="hidden" name="user_id" value="{{ user.id }}">
                                                 <input type="hidden" name="action" value="deactivate">
-                                                <button type="submit" name="action_deactivate" value="deactivate" class="form-btn">Deactivate</button>
+                                                <button type="submit"
+                                                        name="action_deactivate"
+                                                        value="deactivate"
+                                                        class="form-btn">Deactivate</button>
                                             </td>
                                             <td>
                                                 <input type="hidden" name="user_id" value="{{ user.id }}">
@@ -126,7 +129,7 @@
                             {% endfor %}
                         </table>
                     {% else %}
-                        <h2>No active users found.</h2>
+                        <h2>No other active users found. You are the only active user.</h2>
                     {% endif %}
                 </div>
             </div>

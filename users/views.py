@@ -20,11 +20,17 @@ from .forms import (
     SetPasswordForm,
     PasswordResetForm,
 )
-from .decorators import unauthenticated_users_only, authenticated_users_only, admin_only
+from .decorators import (
+    unauthenticated_users_only,
+    authenticated_users_only,
+    admin_only,
+    users_only,
+)
 from .tokens import account_activation_token
 
 
 # Create your views here.
+
 
 @unauthenticated_users_only
 def activate(request, uidb64, token):
@@ -47,6 +53,7 @@ def activate(request, uidb64, token):
 
     return redirect("login")
 
+
 @unauthenticated_users_only
 def verifyReset(request, uidb64, token):
     User = get_user_model()
@@ -63,7 +70,9 @@ def verifyReset(request, uidb64, token):
             form = SetPasswordForm(user, request.POST)
             if form.is_valid():
                 form.save()
-                messages.success(request, f"Password reset successful. You can now login.")
+                messages.success(
+                    request, f"Password reset successful. You can now login."
+                )
                 return redirect("login")
             else:
                 for field, error_messages in form.errors.items():
@@ -77,6 +86,7 @@ def verifyReset(request, uidb64, token):
         messages.error(request, f"Invalid password reset link.")
 
     return redirect("login")
+
 
 @unauthenticated_users_only
 def tokenEmail(request, user, to_email, subject, template, puspose):
@@ -95,7 +105,10 @@ def tokenEmail(request, user, to_email, subject, template, puspose):
     sender_email = "services@sajidifti.com"
 
     email = EmailMessage(
-        subject, message, from_email=f"{sender_name} <{sender_email}>", to=[to_email]
+        subject,
+        message,
+        from_email=f"{sender_name} <{sender_email}>",
+        to=[to_email],
     )
 
     try:
@@ -119,7 +132,10 @@ def notificationEmail(request, subject, message, to_email):
     sender_email = "services@sajidifti.com"
 
     email = EmailMessage(
-        subject, message, from_email=f"{sender_name} <{sender_email}>", to=[to_email]
+        subject,
+        message,
+        from_email=f"{sender_name} <{sender_email}>",
+        to=[to_email],
     )
 
     try:
@@ -214,7 +230,9 @@ def customLogin(request):
                         field == "captcha"
                         and error_message == "This field is required."
                     ):
-                        custom_error_message = "You must pass the reCAPTCHA test. "
+                        custom_error_message = (
+                            "You must pass the reCAPTCHA test. "
+                        )
                         # messages.error(request, custom_error_message)
                         allerrors = allerrors + " " + custom_error_message
                     else:
@@ -307,7 +325,9 @@ def profile(request):
     user = get_user_model().objects.filter(username=username).first()
 
     if request.method == "POST":
-        form = UserUpdateForm(request.POST, request.FILES, instance=request.user)
+        form = UserUpdateForm(
+            request.POST, request.FILES, instance=request.user
+        )
 
         if form.is_valid():
             form.save()
@@ -363,7 +383,9 @@ def customadmin(request):
     inactive_users = get_user_model().objects.filter(
         is_active=False, activation_email_sent=False
     )
-    return render(request, "users/admin.html", {"inactive_users": inactive_users})
+    return render(
+        request, "users/admin.html", {"inactive_users": inactive_users}
+    )
 
 
 @login_required
@@ -395,3 +417,23 @@ def allusers(request):
 
     active_users = get_user_model().objects.filter(is_active=True)
     return render(request, "users/users.html", {"active_users": active_users})
+
+
+@login_required
+@users_only
+def delete_account(request):
+    if request.user.groups.filter(name="generaluser").exists():
+        if request.method == "POST":
+            user = request.user
+            user.delete()
+            messages.success(
+                request, "Your account has been deleted successfully."
+            )
+            return redirect("home")
+        else:
+            return render(request, "users/delete_account.html")
+    else:
+        messages.error(
+            request, "You are not authorized to delete your account."
+        )
+        return redirect("home")
