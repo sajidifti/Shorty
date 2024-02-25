@@ -540,6 +540,7 @@ td {
     display: flex;
     position: fixed;
     height: 10vh;
+    background-color: #fff;
     justify-content: center;
     align-items: center;
   }
