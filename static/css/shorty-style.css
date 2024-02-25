@@ -432,7 +432,8 @@ td {
   width: 100%;
   margin-top: 20px;
   text-align: center;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .buttons a {
@@ -441,7 +442,7 @@ td {
   color: #fff;
   padding: 12px;
   margin: 0 5px;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
   width: 150px !important;
   border-radius: 20px;
@@ -571,6 +572,16 @@ td {
     width: 30px !important;
     height: 30px !important;
     border-radius: 50%;
+  }
+
+  .users-form table th,
+  td {
+    padding: 2px;
+    font-size: 12px;
+  }
+
+  .form-btn {
+    font-size: 12px;
   }
 }
 

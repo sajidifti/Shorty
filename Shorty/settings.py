@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "users",
     "main",
     "django_recaptcha",
+    "fontawesomefree",
 ]
 
 

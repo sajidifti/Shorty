@@ -2,3 +2,4 @@ django
 django-recaptcha
 pillow
 six
+fontawesomefree
