@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+        <script src="https://kit.fontawesome.com/abffacff72.js"
+                crossorigin="anonymous"></script>
         <!-- favicon -->
         <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>All URLs - Shorty</title>
@@ -82,6 +84,9 @@
                 </div>
             </div>
             <div class="right">
+                <div class="mobile-logo">
+                    <img src="{% static "images/shorty_logo.png" %}" alt="Shorty Logo" srcset="">
+                </div>
                 <div class="users-form-container">
                     {% if messages %}
                         {% for message in messages %}
@@ -94,7 +99,7 @@
                         <h2>All URLs</h2>
                         <table>
                             <tr>
-                                <th>Original</th>
+                                <th class="original-url">Original</th>
                                 <th>Shortened</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
@@ -103,7 +108,7 @@
                                 <form action="" class="users-form" method="post">
                                     {% csrf_token %}
                                     <tr>
-                                        <td>{{ url.original_url }}</td>
+                                        <td class="original-url">{{ url.original_url }}</td>
                                         <td>{{ domain }}/{{ url.custom_url }}</td>
                                         <td>
                                             <a href="{% url 'shortened' url.id %}" class="form-btn">View</a>
@@ -120,6 +125,7 @@
                         <h2>No URLs found.</h2>
                     {% endif %}
                 </div>
+                {% include "main/bottomNav.html" %}
             </div>
         </div>
     </body>

@@ -9,6 +9,8 @@
         <link rel="stylesheet" href="{% static "css/shorty-style.css" %}">
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+        <script src="https://kit.fontawesome.com/abffacff72.js"
+                crossorigin="anonymous"></script>
         <!-- favicon -->
         <link rel="icon" type="image/x-icon" href="{% static "images/fav.png" %}">
         <title>Profile - Shorty</title>
@@ -84,6 +86,9 @@
                 </div>
             </div>
             <div class="right">
+                <div class="mobile-logo">
+                    <img src="{% static "images/shorty_logo.png" %}" alt="Shorty Logo" srcset="">
+                </div>
                 <div class="form-container">
                     {% if messages %}
                         {% for message in messages %}
@@ -142,6 +147,7 @@
                         </div>
                     </form>
                 </div>
+                {% include "main/bottomNav.html" %}
             </div>
         </div>
         <script>

@@ -1,0 +1,18 @@
+<div class="bottom-nav">
+    <a href="{% url 'home' %}"><i class="fas fa-home"></i></a>
+    <a href="{% url "myurls" %}"><i class="fa-solid fa-link"></i></a>
+    {% if user.groups.all.0.name == 'admin' %}
+        <a href="{% url "allurls" %}"><i class="fa-solid fa-border-all"></i></a>
+        <a href="{% url "customadmin" %}"><i class="fa-solid fa-check-to-slot"></i></a>
+        <a href="{% url "allusers" %}"><i class="fa-solid fa-user-check"></i></a>
+    {% endif %}
+    <a href="{% url 'profile' %}">
+        <div class="mobile-profile-container">
+            <div>
+                <img src="{{ user.image.url }}"
+                     alt="Profile Photo"
+                     class="mobile-profile-photo">
+            </div>
+        </div>
+    </a>
+</div>
